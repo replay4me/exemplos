@@ -1,6 +1,6 @@
 <?php
 // Captura as credenciais necessárias para autenticar um usuário (via embed).
-// http://api.replay4.me/embed/access_token/request
+// https://github.com/replay4me/embed-docs/wiki/2.-Autentica%C3%A7%C3%A3o
 function autenticacao($email,$name){
     $ch = curl_init('https://'.AMBIENTE.'/embed/access_token/request');
     curl_setopt_array($ch, [
