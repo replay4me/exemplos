@@ -38,6 +38,11 @@ $retMod = modulos();
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
+  <style>
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+  </style>
 
   <body>
     <nav class="navbar navbar-fixed-top navbar-inverse">
@@ -55,9 +60,26 @@ $retMod = modulos();
           <ul class="nav navbar-nav">
             <?
                 foreach ($retMod->data->modules as $mod => $value) {
+                    if(!empty($value->parent)){
+                      ?>
+                      <li class="dropdown">
+                        <a href="?mod_id=<?=$value->id?>" class="dropdown-toggle" role="button" aria-expanded="false"><?=$value->title?> <span class="caret"></span></a>
+                          <ul class="dropdown-menu" role="menu">
+                            <?
+                              foreach ($value->parent as $par => $parent) {
+                                ?>
+                                <li><a href="?mod_id=<?=$parent->id?>"><?=$parent->title?></a></li>
+                                <?
+                              }
+                            ?>
+                          </ul>
+                        </li>
+                      <?
+                    } else {
                     ?>
                         <li><a href="?mod_id=<?=$value->id?>"><?=$value->title?></a></li>
                     <?
+                    }
                 }
             ?>
           </ul>
