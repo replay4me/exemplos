@@ -1,13 +1,20 @@
 <?php
+session_start();
 include("configs.php");
 include("functions.php");
 
-// Informar o email e nome do usuário que terá acesso ao conteúdo
-$email = "usuario@suaempresas.com.br";
-$name = "Nome do usuario";
+// VERIFICAR SE FOI DEFINIDO ALGUM USUÁRIO
+if(empty($_POST['email'])){
+    if(empty($_SESSION['email'])){
+        $_SESSION['email'] = null;
+    } else {
+        $_SESSION['email'] = $_SESSION['email'];
+    }
+} else {
+    $_SESSION['email'] = $_POST['email'];
+}
 
-$retAut = (autenticacao($email,$name));
-$ac = $retAut->data->access_token;
+$flag_fullname = false;
 
 $retMod = modulos();
 ?><!DOCTYPE html>
@@ -17,10 +24,10 @@ $retMod = modulos();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Relatório por usuário">
+    <meta name="author" content="replay4.me">
 
-    <title>Template para Empresas</title>
+    <title>Template para Empresas - Relatórios</title>
 
     <!-- Bootstrap core CSS -->
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -96,40 +103,55 @@ $retMod = modulos();
             <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
           </p>
           <div class="jumbotron">
-            <h1>Template de Exemplo</h1>
-            <p>Este é um exemplo simples de como recuperar os módulos, playlist e trilhas de aprenizado via API e exibir em seu ambiente.</p>
+            <h1>Relatórios de Exemplo</h1>
+            <p>Este é um exemplo simples de como listar relatórios de todas as playlist e trilhas de um módulo por usuário.</p>
           </div>
             <div class="row">
+              <form action="" method="post" class="form">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="email">E-mail</label>
+                        <div class="input-group">
+                            <input type="text" name="email" value="<?=$_SESSION['email']?>" class="form-control" id="email" placeholder="usuario@empresa.com">
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-primary">ok</button>
+                            </span>
+                        </div>
+                    </div>
+
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="fullname">Nome</label>
+                          <input class="form-control" id="fullname" type="text" disabled>
+                    </div>
+                  </div>
+                </div>
+
+              </form>
                 <?
                     if(isset($_GET["mod_id"])>0){
 
-                        // VERIFICA SE EXISTE EMBED_TOKEN PARA EXIBIR CONTEUDO
-                        if(isset($_GET["embed_token"])==""){
-
-                            $retPL = playlist($_GET["mod_id"]);
+                      $retPL = playlist($_GET["mod_id"]);
 
                             foreach ($embed = $retPL->data->playlists as $pl => $value) {
+                              $retRep = relatorios($value->embed_token, $_SESSION['email']);
+                              // VERIFICAR SE EXISTE INFORMAÇÃO DO USUARIO, OU SEJA, SE VISUALIZOU
+                              if(empty($retRep->data->user->percent)){
+                                $user_value = "sem informações";
+                              } else {
+                                $user_value = round($retRep->data->user->percent,0) . "%";
+                                // GUARDA INFORMACAO DO NOME DO USUARIO
+                                if(!$flag_fullname){
+                                    $fullname = $retRep->data->user->fullname;
+                                    $flag_fullname = true;
+                                }
+                              }
                                 ?>
-                                  <div class="col-sm-6 col-md-4">
-                                    <div class="thumbnail">
-                                      <img src="<?=$value->thumbnail?>" alt="<?=$value->title?>">
-                                      <div class="caption">
-                                        <a href="?mod_id=<?=$_GET["mod_id"]?>&embed_token=<?=$value->embed_token?>">
-                                            <h3><?=$value->title?></h3>
-                                            <p><?=$value->description?></p>
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
+                                  <?=$value->title?> - <?=$user_value?><br>
                                 <?
                             }
-                        } else {
-                            ?>
-                                <div class="content">
-                                    <!-- conteúdo replay4me será exibido aqui -->
-                                </div>
-                            <?
-                        }
                     }
                 ?>
             </div><!--/row-->
@@ -145,38 +167,15 @@ $retMod = modulos();
 
     </div><!--/.container-->
 
-    <? if(isset($_GET["embed_token"])!=""){ ?>
-    <!-- Replay4me JavaScript -->
+    <?
+    if(!$flag_fullname){
+      $fullname = "NÃO ENCONTRADO";
+    }
+    ?>
+
     <script>
-        (function(e,a,n,t,r){e[r]=e[r]||function(){(e[r].data=e[r].data||[]).push(arguments)};
-         var s=a.createElement(n),c=a.getElementsByTagName(n)[0];s.async=1,
-         s.src=t,c.parentNode.insertBefore(s,c)
-         })(window,document,'script','//<?=AMBIENTE?>/in.js','r4me');
-
-        r4me('domain',window.document.domain || window.location.href );
-
-        r4me('params',{
-            'token':'<?=$ac?>', // TOKEN Gerado via autenticação
-            'embed':'<?=$_GET["embed_token"]?>' // Embed Token da playlist que será exibida
-        });
-
-
-        r4me('action','embed');
-
-        // Onde você gostaria de exibir o conteúdo ?
-        // Utilize seletores jQuery
-        r4me('options',{
-            'target': '.content',
-            'share_notes':false, // Exibe ou não as opções para compartilhar notas
-            'title': false // exibe ou não o título
-        });
-
-        // Eventos
-        r4me('events.onload',function(playlistInfo){
-            console.log(playlistInfo);
-        });
+      document.getElementById("fullname").value = "<?=$fullname;?>";
     </script>
-    <? } ?>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

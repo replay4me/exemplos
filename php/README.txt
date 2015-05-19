@@ -14,3 +14,7 @@ Para exibir o conteúdo das páginas, foi utilizado Boostrap 3.3.4
 6.1 - No menu superior, serão listados os módulos disponíveis. Selecione um módulo
 6.2 - Serão listados os conteúdos disponíveis (playlists e trilhas). Selecione um conteúdo
 6.3 - Será listado o conteúdo selecionado
+
+7. - Relatórios
+7.1 - reports.php = exibe relatório de todos os usuários pertencentes a playlist ou trilha do módulo selecionad
+7.2 - report_user.php = exibe relatório de todas as playlist ou trilhas por usuário expecífico de um módulo

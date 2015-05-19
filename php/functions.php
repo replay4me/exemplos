@@ -2,7 +2,7 @@
 // Captura as credenciais necessárias para autenticar um usuário (via embed).
 // https://github.com/replay4me/embed-docs/wiki/2.-Autentica%C3%A7%C3%A3o
 function autenticacao($email,$name){
-    $ch = curl_init('https://'.AMBIENTE.'/embed/access_token/request');
+    $ch = curl_init(AMBIENTE.'/embed/access_token/request');
     curl_setopt_array($ch, [
         CURLOPT_POST => true,
         CURLOPT_RETURNTRANSFER => true,
@@ -25,7 +25,7 @@ function autenticacao($email,$name){
 // Exibe todos os módulos cadastrados na empresa
 // https://github.com/replay4me/embed-docs/wiki/3.-Como-Listar-M%C3%B3dulos
 function modulos(){
-    $ch = curl_init('https://'.AMBIENTE.'/embed/modules?client_id='.CLIENT_ID.'&client_secret='.CLIENT_SECRET);
+    $ch = curl_init(AMBIENTE.'/embed/modules?client_id='.CLIENT_ID.'&client_secret='.CLIENT_SECRET);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => false,
@@ -42,7 +42,7 @@ function modulos(){
 // Exibe todas as playlsits de um determinado módulo cadastrados na empresa.
 // https://github.com/replay4me/embed-docs/wiki/4.-Como-Listar-Playlists
 function playlist($module_id){
-    $ch = curl_init('https://'.AMBIENTE.'/embed/playlists?client_id='.CLIENT_ID.'&client_secret='.CLIENT_SECRET.'&module_id='.$module_id);
+    $ch = curl_init(AMBIENTE.'/embed/playlists?client_id='.CLIENT_ID.'&client_secret='.CLIENT_SECRET.'&module_id='.$module_id);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => false
@@ -55,3 +55,26 @@ function playlist($module_id){
     $playlists = json_decode($response);
     return $playlists;
 }
+
+// Retorna as informações de relatórios (playlist e trilha de aprendizado) por playlist. Também possível filtrar por usuário
+// https://github.com/replay4me/embed-docs/wiki/6.-Relat%C3%B3rios
+function relatorios($embed, $email){
+    if(!empty($email)){
+        $url = AMBIENTE.'/embed/reports/?client_id='.CLIENT_ID.'&client_secret='.CLIENT_SECRET.'&embed='.$embed.'&email='.$email;
+    } else {
+        $url = AMBIENTE.'/embed/reports/?client_id='.CLIENT_ID.'&client_secret='.CLIENT_SECRET.'&embed='.$embed;
+    }
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HEADER => false
+    ]);
+
+    $response = curl_exec($ch);
+
+    curl_close($ch);
+
+    $playlists = json_decode($response);
+    return $playlists;
+}
+
