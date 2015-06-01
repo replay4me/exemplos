@@ -151,7 +151,7 @@ $retMod = modulos();
         (function(e,a,n,t,r){e[r]=e[r]||function(){(e[r].data=e[r].data||[]).push(arguments)};
          var s=a.createElement(n),c=a.getElementsByTagName(n)[0];s.async=1,
          s.src=t,c.parentNode.insertBefore(s,c)
-         })(window,document,'script','//<?=AMBIENTE?>/in.js','r4me');
+         })(window,document,'script','<?=AMBIENTE?>/in.js','r4me');
 
         r4me('domain',window.document.domain || window.location.href );
 
