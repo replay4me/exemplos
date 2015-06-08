@@ -168,7 +168,9 @@ $retMod = modulos();
         r4me('options',{
             'target': '.content',
             'share_notes':false, // Exibe ou não as opções para compartilhar notas
-            'title': false // exibe ou não o título
+            'title': false, // exibe ou não o título
+            'show_list': false, // exibe ou não a lista de vídeos
+            'show_buttons': false // exibe ou não botões para o anterior/próximo vídeo da lista
         });
 
         // Eventos
