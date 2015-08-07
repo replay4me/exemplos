@@ -160,7 +160,6 @@ $retMod = modulos();
             'embed':'<?=$_GET["embed_token"]?>' // Embed Token da playlist que será exibida
         });
 
-
         r4me('action','embed');
 
         // Onde você gostaria de exibir o conteúdo ?
@@ -171,6 +170,7 @@ $retMod = modulos();
             'title': true, // exibe ou não o título
             'show_list': true, // exibe ou não a lista de vídeos
             'show_buttons': false, // exibe ou não botões para o anterior/próximo vídeo da lista
+            'dinamic_size': false, //Permitir ou não modificar dinamicamente o tamanho do iframe que exibe o conteúdo             
             'container': {'height':'520px','loading_height':'520px'} // define a altura e tela de carregando do player
         });
 
@@ -178,7 +178,23 @@ $retMod = modulos();
         r4me('events.onload',function(playlistInfo){
             console.log(playlistInfo);
         });
+
     </script>
+
+    <!--  Código que permite a alteração do tamanho do player, 
+          se o dinamic_size for utilizado, este código deve ficar na página, 
+          para receber a informação enviada pela plataforma -->
+    <script type="text/javascript">
+      var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+      var eventer = window[eventMethod];
+      var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+      eventer(messageEvent, function(e) {
+        if (isNaN(e.data)) return;
+        document.getElementsByTagName('iframe')[0].style.height = e.data + 'px';
+      }, false);
+    </script>
+
     <? } ?>
 
     <!-- Bootstrap core JavaScript
