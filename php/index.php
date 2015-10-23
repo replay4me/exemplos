@@ -171,6 +171,7 @@ $retMod = modulos();
             'show_list': true, // exibe ou não a lista de vídeos
             'show_buttons': false, // exibe ou não botões para o anterior/próximo vídeo da lista
             'dinamic_size': false, //Permitir ou não modificar dinamicamente o tamanho do iframe que exibe o conteúdo             
+            'auto_play': true, //Permite que o vídeo inicie automaticamente 
             'container': {'height':'520px','loading_height':'520px'} // define a altura e tela de carregando do player
         });
 
