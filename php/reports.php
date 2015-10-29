@@ -82,8 +82,7 @@ $retMod = modulos();
 
     <div class="container">
 
-      <div class="row row-offcanvas row-offcanvas-right">
-
+ <div class="row row-offcanvas row-offcanvas-right">
         <div class="col-xs-12 col-sm-12">
           <p class="pull-right visible-xs">
             <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
@@ -93,7 +92,7 @@ $retMod = modulos();
             <p>Este é um exemplo simples de como listar e exibir os relatórios das playlist por módulo.</p>
           </div>
             <div class="row">
-                <?
+                <?php  
                     if(isset($_GET["mod_id"])>0){
 
                         // VERIFICA SE EXISTE EMBED_TOKEN PARA EXIBIR O RELATÓRIO
@@ -103,23 +102,70 @@ $retMod = modulos();
 
                             foreach ($embed = $retPL->data->playlists as $pl => $value) {
                                 ?>
-                                  <a href="?mod_id=<?=$_GET["mod_id"]?>&embed_token=<?=$value->embed_token?>"><?=$value->title?></a><br>
-                                <?
+                                  <a href="?mod_id=<?php   echo $_GET["mod_id"]?>&embed_token=<?php   echo $value->embed_token?>"><?php   echo $value->title?></a><br>
+                                <?php  
                             }
                         } else {
                           if(empty($_GET["email"])){
                               $retRep = relatorios($_GET["embed_token"], "");
-                              foreach ($users = $retRep->data->users_who_watched as $user => $value) {
-                                  ?>
-                                    <a href="?mod_id=<?=$_GET["mod_id"]?>&embed_token=<?=$_GET["embed_token"]?>&email=<?=$value->email?>"><?=$value->fullname?></a> - <?=round($value->percent,0)?>%</br>
-                                  <?
+
+                              // VERIFICA SE É PLAYLIST
+                              if(isset($retRep->data->total_users_watched)){
+                                echo "<table border=1 width=100%>";
+                                ?>
+                                <tr>
+                                  <th>Nome</th>
+                                  <th>Email</th>
+                                  <th>Percentual</th>
+                                </tr>
+                                <?php 
+                                foreach ($users = $retRep->data->users_who_watched as $user => $value) {
+                                    ?>
+                                    <tr>
+                                      <td><?php   echo $value->fullname ?></td>
+                                      <td><?php   echo $value->email ?></td>
+                                      <td><?php   echo round($value->percent,0)?>%</td>
+                                    </tr>
+                                    <?php  
+                                }
+                                echo "</table>";
+                              // SE FOR TRILHA
+                              } else {
+                                echo "<table border=1 width=100%>";
+                                ?>
+                                <tr>
+                                  <th>Nome</th>
+                                  <th>Email</th>
+                                  <th>Progresso</th>
+                                  <?php if($retRep->data->avaliative_questions != 0) { ?>
+                                    <th>Total de Questões</th>
+                                    <th>Total de Acertos</th>
+                                    <th>Percentual</th>
+                                  <?php }?>
+                                </tr>
+                                <?php 
+                                foreach ($users = $retRep->data->by_users as $user => $value) {
+                                    ?>
+                                    <tr>
+                                      <td><?php   echo $value->fullname ?></td>
+                                      <td><?php   echo $value->email ?></td>
+                                      <td><?php   echo $value->progress ?></td>
+                                      <?php if($retRep->data->avaliative_questions != 0) { ?>
+                                        <td><?php   echo $value->total_questions ?></td>
+                                        <td><?php   echo $value->total_correct_answers ?></td>
+                                        <td><?php   echo $value->percent ?></td>
+                                      <?php }?>
+                                    </tr>
+                                    <?php  
+                                }
+                                echo "</table>";
                               }
                            } else {
                             $retRep = relatorios($_GET["embed_token"], $_GET["email"]);
                             $user = $retRep->data->user
                               ?>
-                                <?=$user->fullname?></a> - <?=round($user->percent,0)?>%
-                              <?
+                                <?php   echo $user->fullname?></a> - <?php   echo round($user->percent,0)?>%
+                              <?php  
                            }
                         }
                     }
